@@ -1,13 +1,13 @@
 library(TwoSampleMR)
 source('/home/panwei/lin00374/cML/cML_O.R')
-data_dir = "/home/panwei/lin00374/ND/data"
+data_dir = "/home/panwei/lin00374/ND/revision1/data"
 setwd(data_dir)
-pre1_list = pre2_list = c('ebi-a-GCST005195','ieu-a-89','ebi-a-GCST002222','4080_irnt')
+pre1_list = pre2_list = c('ebi-a-GCST005195','ieu-a-89','ebi-a-GCST002222','ebi-a-GCST90018970')
 
 array_id = as.numeric(Sys.getenv('SLURM_ARRAY_TASK_ID'))
 
 ## preprocess data in GraphMRcML format - done! ## 
-# dat = readRDS('/home/panwei/lin00374/ND/data/4traits_data.RData')
+# dat = readRDS('/home/panwei/lin00374/ND/revision1/data/4traits_data.RData')
 # n_vec = dat$n_vec
 # R_list = dat$R_list
 # b_mat = dat$b_mat
@@ -58,9 +58,9 @@ array_id = as.numeric(Sys.getenv('SLURM_ARRAY_TASK_ID'))
 #     out$rho_mat = rho_mat
 #     out$n_vec = n_vec
 # screen_res = out
-#     saveRDS(screen_res,'/home/panwei/lin00374/ND/data/4traits_screen.rds')
+#     saveRDS(screen_res,'/home/panwei/lin00374/ND/revision1/data/4traits_screen.rds')
 
-screen_res = readRDS('/home/panwei/lin00374/ND/data/4traits_screen.rds')
+screen_res = readRDS('/home/panwei/lin00374/ND/revision1/data/4traits_screen.rds')
 Generate_Perturb <- function(b_mat,se_mat,n_vec,rho_mat,DP_mat_list){
   n_trait = length(n_vec)
   m_used = nrow(b_mat)
@@ -143,4 +143,4 @@ Graph_Estimate <- function(b_mat,se_mat,n_vec,rho_mat,IJ_snp_list,t=0,random_sta
   out$obs_graph_pval_list = obs_graph_pval_list
   out$trait_vec = pre1_list
 
-save(out,file=paste0('/home/panwei/lin00374/ND/result/dp_list_seed',array_id,'.RData'))
+save(out,file=paste0('/home/panwei/lin00374/ND/revision1/result/dp_list_seed',array_id,'.RData'))

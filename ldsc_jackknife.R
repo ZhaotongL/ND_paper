@@ -1,30 +1,10 @@
 library(data.table)
 library(reader)
 datadir = '/home/panwei/lin00374/cML/graph/vcffiles'
-savedir = '/home/panwei/lin00374/ND/result'
-pre1_list = pre2_list = c('ebi-a-GCST005195','ieu-a-89','ebi-a-GCST002222','4080_irnt')
+savedir = '/home/panwei/lin00374/ND/revision1/result'
+pre1_list = pre2_list = c('ebi-a-GCST005195','ieu-a-89','ebi-a-GCST002222','ebi-a-GCST90018970')
 
-## Convert vcf files to LDSC format - done!
-## extract common SNPs - done!
-# df1 = fread(sprintf('%s/%s.vcf.gz.txt.sumstats.gz',datadir,pre1_list[1]))
-# df2 = fread(sprintf('%s/%s.vcf.gz.txt.sumstats.gz',datadir,pre1_list[2]))
-# df3 = fread(sprintf('%s/%s.vcf.gz.txt.sumstats.gz',datadir,pre1_list[3]))
-# df4 = fread(sprintf('%s/%s.vcf.gz.txt.sumstats.gz',datadir,pre1_list[4]))
-# df1.snp = df1$SNP[!is.na(df1$Z)]
-# df2.snp = df2$SNP[!is.na(df2$Z)]
-# df3.snp = df3$SNP[!is.na(df3$Z)]
-# df4.snp = df4$SNP[!is.na(df4$Z)]
-# common_SNP = intersect(intersect(intersect(df1.snp,df2.snp),df3.snp),df4.snp)
-# df1[!df1$SNP %in% common_SNP,2:5]=NA
-# df2[!df2$SNP %in% common_SNP,2:5]=NA
-# df3[!df3$SNP %in% common_SNP,2:5]=NA
-# df4[!df4$SNP %in% common_SNP,2:5]=NA
-# fwrite(df1,sprintf('/home/panwei/lin00374/ND/data/%s.vcf.gz.txt.sumstats.gz',pre1_list[1]),sep='\t')
-# fwrite(df2,sprintf('/home/panwei/lin00374/ND/data/%s.vcf.gz.txt.sumstats.gz',pre1_list[2]),sep='\t')
-# fwrite(df3,sprintf('/home/panwei/lin00374/ND/data/%s.vcf.gz.txt.sumstats.gz',pre1_list[3]),sep='\t')
-# fwrite(df4,sprintf('/home/panwei/lin00374/ND/data/%s.vcf.gz.txt.sumstats.gz',pre1_list[4]),sep='\t')
 
-datadir = '/home/panwei/lin00374/ND/data/'
 G = G_pval =  matrix(0,nrow=length(pre1_list),ncol=length(pre1_list),dimnames=list(pre1_list,pre2_list))
 pv_rg_mat = NULL
 rg_jk_mat = NULL
@@ -62,9 +42,10 @@ for(i in 1:(length(pre1_list)-1)){
 cov_rg = cov(pv_rg_mat)/n_block
 G[lower.tri(G)] = t(G)[lower.tri(G)]
 est_rg = G[lower.tri(G)]
-G_dir_list = G_obs_list = vector(mode='list', length=300)
-for(i in 1:300){
-    set.seed(i)
+B = 500
+G_dir_list = G_obs_list = vector(mode='list', length=B)
+set.seed(123)
+for(i in 1:B){
     G_obs = matrix(0,nrow=nrow(G),ncol=ncol(G))
     G_obs[lower.tri(G_obs)] = MASS::mvrnorm(n=1, mu = est_rg, Sigma=cov_rg)
     G_obs[upper.tri(G_obs)]  = t(G_obs)[upper.tri(G_obs)]
@@ -77,6 +58,11 @@ ldsc_dir_graph_pval = pnorm(-abs(ldsc_dir_graph_mean/ldsc_dir_graph_sd))*2
 ldsc_obs_graph_mean = apply(simplify2array(G_obs_list), 1:2, mean)
 ldsc_obs_graph_sd = apply(simplify2array(G_obs_list), 1:2, sd)
 ldsc_obs_graph_pval = pnorm(-abs(ldsc_obs_graph_mean/ldsc_obs_graph_sd))*2
+colnames(ldsc_obs_graph_pval) = rownames(ldsc_obs_graph_pval) = pre1_list
+colnames(ldsc_obs_graph_mean) = rownames(ldsc_obs_graph_mean) = pre1_list
+colnames(ldsc_dir_graph_mean) = rownames(ldsc_dir_graph_mean) = pre1_list
+colnames(ldsc_dir_graph_pval) = rownames(ldsc_dir_graph_pval) = pre1_list
+
 
 saveRDS(list(G_obs = ldsc_obs_graph_mean, pval_obs = ldsc_obs_graph_pval,
              G_dir = ldsc_dir_graph_mean, pval_dir = ldsc_dir_graph_pval

@@ -9,11 +9,11 @@ source('/home/panwei/lin00374/JMR/helper.R')
 
 
 data_dir = "/home/panwei/lin00374/cML/graph/vcffiles" 
-savedata_dir = "/home/panwei/lin00374/ND/data"
+savedata_dir = "/home/panwei/lin00374/ND/revision1/data"
 
 temp_dir <- tempdir()
 
-pre1_list = pre2_list = c('ebi-a-GCST005195','ieu-a-89','ebi-a-GCST002222','4080_irnt')
+pre1_list = pre2_list = c('ebi-a-GCST005195','ieu-a-89','ebi-a-GCST002222','ebi-a-GCST90018970')
 for(pre1 in pre1_list){
     vcf <- readVcf(sprintf('%s/%s.vcf.gz',data_dir,pre1))
     exp_df = vcf_to_granges(vcf) %>% dplyr::as_tibble() %>% 
@@ -64,7 +64,7 @@ for(pre1 in pre1_list){
 }
 
 #### 
-pre1_list = pre2_list = c('ebi-a-GCST005195','ieu-a-89','ebi-a-GCST002222','4080_irnt')
+pre1_list = pre2_list = c('ebi-a-GCST005195','ieu-a-89','ebi-a-GCST002222','ebi-a-GCST90018970')
 all_IV = list()
 k=1
 for(pre1 in pre1_list){
@@ -135,4 +135,4 @@ for(i in 1:nrow(ldBlocks)){
     matListInd = matListInd+1
   }
 }
-saveRDS(list(b_mat=b_mat,se_mat=se_mat,all_IV=all_IV_df,R_list=matList,P=diag(4),n_vec=c(547261,253288,94595,340159)),sprintf('%s/4traits_data.RData',savedata_dir))
+saveRDS(list(b_mat=b_mat,se_mat=se_mat,all_IV=all_IV_df,R_list=matList,P=diag(4),n_vec=c(547261,253288,94595,360863)),sprintf('%s/4traits_data.RData',savedata_dir))
